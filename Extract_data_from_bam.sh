@@ -1,3 +1,9 @@
+# ======   usage =======
+# sh Extract_data_from_bam.sh <sorted bamfile>
+# ======   Author: zhaoqi@sysucc.org.cn ========
+# =======Requirement =======
+# sambamba, bam2fq
+
 #using star output bamfile as example 
 #!/bin/sh
 bamin=$1
