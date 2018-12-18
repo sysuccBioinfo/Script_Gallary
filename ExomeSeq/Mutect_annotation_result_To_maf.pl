@@ -1,5 +1,3 @@
-#!/bin/perl
-
 #!/usr/bin/perl -w
 =head1 #===============================================================================
 #        USAGE: perl annovar2maf.pl Mut_multianno.lst > Merge_mut.maf
@@ -21,7 +19,7 @@ die `pod2text $0` unless @ARGV == 1;
 use strict;
 use File::Basename;
 
-print "Hugo_Symbol\tChromosome\tStart_Position\tEnd_Position\tVariant_Classification\tVariant_Type\tReference_Allele\tTumor_Seq_Allele1\tTumor_Seq_Allele2\tRef_allele_depth\tAlt_allele_depth\tVAF\tCDS_Change\tProtein_Change\tTumor_Sample_Barcode\n";
+print "Hugo_Symbol\tChromosome\tStart_Position\tEnd_Position\tVariant_Classification\tVariant_Type\tReference_Allele\tTumor_Seq_Allele1\tTumor_Seq_Allele2\tRef_allele_depth\tAlt_allele_depth\tVAF\tCDS_Change\tProtein_Change\tTumor_Sample_Barcode\tcosmic70\tavsnp147\tALL.sites.2015_08_edit\tesp6500siv2_all\tExAC_ALL\n";
 
 open IN, shift or die $!;
 
@@ -41,7 +39,7 @@ while (<IN>){
 			next;
 		}
 		my @F = split /\t/;
-		my @G = split /:/, $F[$index{"Otherinfo"}+10];
+		my @G = split /:/, $F[$index{"Otherinfo"}+13];
 		my @H = split /,/, $G[1];
 		my $dp_ref = $H[0];
 		my $dp_alt = $H[1];
@@ -55,8 +53,6 @@ while (<IN>){
 		$F[$index{"ExonicFunc.refGene"}] = "3'UTR" if $F[$index{"Func.refGene"}] =~ "UTR3";
 		$F[$index{"ExonicFunc.refGene"}] = "5'UTR" if $F[$index{"Func.refGene"}] =~ "UTR5";
 		$F[$index{"ExonicFunc.refGene"}] = "RNA" if $F[$index{"Func.refGene"}] =~ /ncRNA_/;
-#		next if $F[$index{"ExonicFunc.refGene"}] eq "NA" or $F[$index{"ExonicFunc.refGene"}] eq "unkno
-wn" or $F[$index{"ExonicFunc.refGene"}] eq "synonymous SNV";
 		next if $F[$index{"ExonicFunc.refGene"}] eq "unknown";
 		$F[$index{"ExonicFunc.refGene"}] =~ s/^nonsynonymous SNV/Missense_Mutation/;
 		$F[$index{"ExonicFunc.refGene"}] =~ s/^synonymous SNV/Silent/;
@@ -90,9 +86,16 @@ wn" or $F[$index{"ExonicFunc.refGene"}] eq "synonymous SNV";
 			$mut_type = "SNP";
 		}
 		my $mut_allele1;
-		$mut_allele1 = $F[$index{"Ref"}] if $G[0] eq "0/1";
-		$mut_allele1 = $F[$index{"Alt"}] if $G[0] eq "1/1";
+		#$mut_allele1 = $F[$index{"Ref"}] if $G[0] =~ /0\/1/;
+		$mut_allele1 = $F[$index{"Alt"}] ;
+		#if $G[0] =~ /1\/1/;
 		$F[$index{"Chr"}] =~ s/chr//;
-		print join "\t", $F[$index{"Gene.refGene"}], $F[$index{"Chr"}], $start_pos, $end_pos, $F[$index{"ExonicFunc.refGene"}], $mut_type, $F[$index{"Ref"}], $mut_allele1, $F[$index{"Alt"}], $dp_ref, $dp_alt, $vaf, $cds_change, $aa_change, $sample_id."\n";
+		$F[$index{"cosmic70"}] = "." unless $F[$index{"cosmic70"}];
+		$F[$index{"avsnp147"}] = "." unless $F[$index{"avsnp147"}];
+		$F[$index{"ALL.sites.2015_08_edit"}] = "." unless $F[$index{"ALL.sites.2015_08_edit"}];
+		$F[$index{"esp6500siv2_all"}] = "." unless $F[$index{"esp6500siv2_all"}];
+		$F[$index{"ExAC_ALL"}] = "." unless $F[$index{"ExAC_ALL"}];
+		print join "\t", $F[$index{"Gene.refGene"}], $F[$index{"Chr"}], $start_pos, $end_pos, $F[$index{"ExonicFunc.refGene"}], $mut_type, $F[$index{"Ref"}], $mut_allele1, $F[$index{"Alt"}], $dp_ref, $dp_alt, $vaf, $cds_change, $aa_change, $sample_id, $F[$index{"cosmic70"}], $F[$index{"avsnp147"}], $F[$index{"ALL.sites.2015_08_edit"}], $F[$index{"esp6500siv2_all"}], $F[$index{"ExAC_ALL"}];
+		print "\n";
 	}
 }
