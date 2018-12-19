@@ -1,4 +1,17 @@
 #!/bin/sh
+
+if [ $# -lt 1 ] ;then
+
+echo "======================================================="
+    echo "Run Freec with tumor and nomal pipe file  "
+    echo "USAGE: run_freec_exome.sh <TUMORID> <NORMALID>"
+    echo "AUTHOR: Qi Zhao<zhaoqi@sysucc.org.cn>"
+echo "======================================================="
+    exit 0
+
+fi
+
+
 tumorbam=$1
 normalbam=$2
 samplename=${tumorbam}
